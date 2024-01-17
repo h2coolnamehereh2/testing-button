@@ -15,7 +15,7 @@ spec:
       containers:
       - name: my-app
         image: denshnitest.azurecr.io/python/pythonapp:latest  # Replace with the actual Docker image name and tag
-        imagePullPolicy: Always
+        imagePullPolicy: ifNotPresent
         ports:
         - containerPort: 8080  # Replace with the port your application listens on
       imagePullSecrets:
