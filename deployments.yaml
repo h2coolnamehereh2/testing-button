@@ -20,3 +20,9 @@ spec:
         - containerPort: 8080  # Replace with the port your application listens on
       imagePullSecrets:
       - name: acr-secret  # Replace with the name of your Kubernetes Secret 
+    # Define update strategy (optional, RollingUpdate is default)
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 1
