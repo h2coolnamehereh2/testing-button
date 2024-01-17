@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-app
+        image: denshnitest.azurecr.io/python/pythonapp:latest  # Replace with the actual Docker image name and tag
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080  # Replace with the port your application listens on
+      imagePullSecrets:
+      - name: acr-secret  # Replace with the name of your Kubernetes Secret 

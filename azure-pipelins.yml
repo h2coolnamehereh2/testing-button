@@ -1,0 +1,15 @@
+trigger:
+  - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+
+steps:
+  - task: Docker@2
+    displayName: Dockerbuildpush
+    inputs:
+      containerRegistry: 'denshnitest'  # Replace with your service connection name
+      repository: 'denshnitest.azurecr.io/python/pythonapp'  # Replace with your ACR information
+      command: 'buildAndPush'
+      Dockerfile: '**/Dockerfile'
