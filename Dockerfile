@@ -1,27 +1,23 @@
-FROM python:2.7
+# Use an official Node runtime as a base image
+FROM node:14-alpine
 
-# Creating Application Source Code Directory
-RUN mkdir -p /usr/src/app
-
-# Setting Home Directory for containers
+# Set the working directory in the container
 WORKDIR /usr/src/app
 
-# Installing python dependencies
-COPY requirements.txt /usr/src/app/
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy package.json and package-lock.json to the container
+COPY package*.json ./
 
-# Copying src code to Container
-COPY . /usr/src/app
+# Install app dependencies
+RUN npm install
 
-# Application Environment variables
-#ENV APP_ENV development
-ENV PORT 8080
+# Copy the rest of the application code to the container
+COPY . .
 
-# Exposing Ports
-EXPOSE $PORT
+# Build the React app
+RUN npm run build
 
-# Setting Persistent data
-VOLUME ["/app-data"]
+# Expose the port on which the app will run
+EXPOSE 80
 
-# Running Python Application
-CMD gunicorn -b :$PORT -c gunicorn.conf.py main:app
+# Define the command to run the application
+CMD ["npm", "start"]

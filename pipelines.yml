@@ -1,0 +1,51 @@
+trigger:
+- main  # Branch to trigger the pipeline
+
+pr:
+- main  # Pull requests to main branch also trigger the pipeline
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    steps:
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'yourAzureContainerRegistryServiceConnection'  # Replace with your Azure Container Registry service connection
+        repository: 'enshnitest.azurecr.io/react/denshi:latest'  # Replace with your Azure Container Registry and image name
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
+        tags: |
+          $(Build.BuildId)
+    
+- stage: Test
+  jobs:
+  - job: Test
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '14.x'
+      displayName: 'Install Node.js'
+
+    - script: |
+        npm install
+        npm run test
+      displayName: 'Run tests'
+
+- stage: Deploy
+  jobs:
+  - deployment: Deploy
+    environment: 'Env test'  # Replace with your environment name
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: KubernetesManifest@0
+            inputs:
+              action: 'deploy'
+              kubernetesServiceConnection: 'yourKubernetesServiceConnection'  # Replace with your Kubernetes service connection
+              manifests: '**/*.yaml'  # Adjust the path based on your Kubernetes YAML files
+              containers: 'your-acr-name.azurecr.io/your-image-name:$(Build.BuildId)'  # Replace with your Azure Container Registry and image name
